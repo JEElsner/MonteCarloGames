@@ -85,6 +85,13 @@ class TTTTest(unittest.TestCase):
             self.assertEqual(game.get_winner(), player,
                              'Win: {0} NE-SW Diag'.format(player))
 
+    def test_game_end(self):
+        game = ttt.TicTacToe()
+        self.assertFalse(game.is_finished(), 'Empty game is not finished')
+
+        game.board = np.full((3, 3), 'X')
+        self.assertTrue(game.is_finished(), 'Full game is finished')
+
 
 if __name__ == '__main__':
     unittest.main()

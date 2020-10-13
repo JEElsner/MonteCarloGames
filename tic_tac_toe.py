@@ -120,6 +120,9 @@ class TicTacToe(GameState):
         # Return None since there is not yet a winner
         return None
 
+    def is_finished(self):
+        return np.all(np.char.isalpha(self.get_state()))
+
     def __str__(self):
         '''
         Returns a human-readable string representation of the game state

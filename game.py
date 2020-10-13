@@ -74,6 +74,13 @@ class GameState(ABC):
 
         pass
 
+    @abstractmethod
+    def is_finished(self):
+        '''
+        Returns true if the game has ended in this current state
+        '''
+        pass
+
     def get_score(self, player):
         '''
         Gets the current score for the given player, if they have a score
