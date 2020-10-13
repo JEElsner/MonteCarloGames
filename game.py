@@ -1,31 +1,40 @@
+from abc import ABC, abstractmethod
+
 import numpy
 
 from vectorize_objects import vectorize
 
 
-class GameState:
+class GameState(ABC):
     '''
     A base class to store the generic state of any game at a single point in
     time
     '''
 
     def __init__(self):
+        self.players = []
 
         # Create v_funcs for this object
         vectorize(GameState)
 
+    @abstractmethod
     def get_state(self):
         '''
         Returns the current state of the game
         '''
         pass
 
+    @abstractmethod
     def get_current_turn(self):
         '''
         Returns the player whose turn it currently is
         '''
         pass
 
+    def next_turn(self):
+        self.players.append(self.players.pop(0))
+
+    @abstractmethod
     def get_possible_moves(self, player):
         '''
         Returns the list of available moves to the given player
@@ -37,6 +46,7 @@ class GameState:
 
         pass
 
+    @abstractmethod
     def move(self, player, move):
         '''
         Advances the game state by making the given move by the given player
@@ -53,6 +63,7 @@ class GameState:
 
         pass
 
+    @abstractmethod
     def get_winner(self):
         '''
         Returns the winner of the game when the current state of the game has
