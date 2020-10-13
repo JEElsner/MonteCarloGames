@@ -117,11 +117,15 @@ class TicTacToe(GameState):
         if np.all(flipped_diagonal == flipped_diagonal[0]) and flipped_diagonal[0] != 0:
             return flipped_diagonal[0]
 
+        if np.all(np.char.isalpha(self.get_state())):
+            return 'TIE'
+
         # Return None since there is not yet a winner
         return None
 
     def is_finished(self):
-        return np.all(np.char.isalpha(self.get_state()))
+        return self.get_winner() is not None or \
+            np.all(np.char.isalpha(self.get_state()))
 
     def __str__(self):
         '''

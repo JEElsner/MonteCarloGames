@@ -77,7 +77,8 @@ class GameState(ABC):
     @abstractmethod
     def is_finished(self):
         '''
-        Returns true if the game has ended in this current state
+        Returns true if the game has ended in this current state, regardless of
+        whether there is a winner.
         '''
         pass
 

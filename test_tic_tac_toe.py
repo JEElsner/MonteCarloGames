@@ -85,6 +85,14 @@ class TTTTest(unittest.TestCase):
             self.assertEqual(game.get_winner(), player,
                              'Win: {0} NE-SW Diag'.format(player))
 
+    def test_tie(self):
+        game = ttt.TicTacToe()
+        game.board = np.array([['X', 'X', 'O'],
+                               ['O', 'O', 'X'],
+                               ['X', 'O', 'X']])
+
+        self.assertEqual(game.get_winner(), 'TIE', 'Game is a tie')
+
     def test_game_end(self):
         game = ttt.TicTacToe()
         self.assertFalse(game.is_finished(), 'Empty game is not finished')
