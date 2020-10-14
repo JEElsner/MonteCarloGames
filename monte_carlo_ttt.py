@@ -14,6 +14,9 @@ import numpy.random as rng
 # vectorize(), and you will see it called in object constructors
 from vectorize_objects import vectorize
 
+import game
+from game import GameState
+
 # Ignore NumPy warnings: namely divide by zero warnings
 np.warnings.filterwarnings('ignore')
 
@@ -32,7 +35,7 @@ class Node:
     played to reach this game state.
     '''
 
-    def __init__(self, side, board):
+    def __init__(self, state: GameState, side=None, prev_move=None):
         '''
         Creates the Monte Carlo Node.
 
@@ -43,13 +46,15 @@ class Node:
             board       The current state of the game represented by this node
         '''
 
-        self.state = board
+        self.state = state
         self.side = side
 
         self.wins = 0
         self.total = 0
 
-        self.children = {}
+        self.__previous_move = prev_move
+
+        self.children = []
 
         # Create v_funcs for all object methods
         vectorize(Node)
@@ -62,48 +67,9 @@ class Node:
 
         return np.divide(self.wins, self.total)
 
-    def next_state(self, move, side):
-        '''
-        Returns the next valid state after the state represented by this node.
-        The new returned state is reached from the current game state when the
-        passed side makes the passed move
-
-        Arguments:
-
-            move        The move made to reach the new game state
-
-            side        The player that makes the move to get to the new game
-                        state
-        '''
-
-        # Expand the game-state tree if necessary
-        if move not in self.children.keys():
-            new_state = np.copy(self.state)
-            new_state.flat[move] = side
-
-            # Add the copy of the game state
-            self.children.update(
-                {move: Node(-1 * self.side, new_state)})
-
-        # Return the game state reached by move
-        return self.children[move]
-
-    def is_end(self):
-        '''
-        Determines whether the node is a terminal leaf node that cannot be
-        extended with more moves: i.e. the contained game state is likely the
-        end of a game
-
-        Returns:
-
-            False if a move can be made,
-            True otherwise.
-        '''
-
-        # TODO this is pretty garbage and maybe a little repetative, fix this
-
-        is_won = get_winner(self.state) != None
-        return is_won | np.count_nonzero(self.state) == self.state.size
+    @property
+    def previous_move(self):
+        return self.__previous_move
 
     def weight(self, parent_node_explored, exploration_param=np.sqrt(2)):
         '''
@@ -111,7 +77,7 @@ class Node:
         explored during simulations
         '''
 
-        return np.divide(self.wins, self.total) + exploration_param * \
+        return self.win_rate() + exploration_param * \
             np.sqrt(np.divide(np.log(parent_node_explored), self.total))
 
     def get_move(self):
@@ -128,12 +94,11 @@ class Node:
         '''
 
         # Stop if no moves can be made
-        if self.is_end():
+        if self.state.is_finished():
             return
 
         # If there are no game states simulated after the current one, create them
-        if len(self.children) == 0:
-            self.expand()
+        self.expand()
 
         # Simulate moves as long as there is more than one option
         if len(self.children) > 1:
@@ -142,18 +107,16 @@ class Node:
                 self.explore()
 
         # Sort the possible moves by their likelyhood of leading to a win
-        # TODO: this is actually pretty good, but it feels bad
-        win_rates = {n.win_rate(): move for move, n in self.children.items()}
+        def sort_key(node): return node.win_rate() \
+            if not np.isnan(node.win_rate()) else 0
 
-        # Debug *ahem* diagnostic statements
-        # print(list(self.children.values())[0].side)
-        # print(self.total)
+        # for c in self.children:
+        #     print(c.previous_move, c.win_rate())
 
-        # for m, n in self.children.items():
-        #     print(m, ':', n.wins, n.total)
+        self.children.sort(key=sort_key, reverse=True)
 
         # Return the move with the highest likelyhood of leading to a win
-        return win_rates[max(win_rates.keys())]
+        return self.children[0].previous_move
 
     def expand(self):
         '''
@@ -162,14 +125,14 @@ class Node:
         for these moves.
         '''
 
-        # Add a move for each open board position
-        for i in range(self.state.size):
-            if self.state.flat[i] == 0:
-                new_state = np.copy(self.state)
-                new_state.flat[i] = -1 * self.side
-
-                self.children.update(
-                    {i: Node(-1 * self.side, new_state)})
+        if len(self.children) == 0:
+            # Add a move for each open board position
+            for move in self.state.get_possible_moves(self.state.get_current_turn()):
+                new_state = self.state.move(
+                    self.state.get_current_turn(), move)
+                new_node = Node(
+                    new_state, side=self.state.get_current_turn(), prev_move=move)
+                self.children.append(new_node)
 
     def explore(self):
         '''
@@ -179,24 +142,18 @@ class Node:
 
         self.total += 1  # Increment total number of simulations on this node
 
-        winner = get_winner(self.state)
+        winner = None
+
         # Base case
-        if winner != None:
-            pass
-            # We don't return out of the function yet, because even for the base
-            # case there is still some work to be done (at the bottom of the function)
-        # Other base case
-        elif np.count_nonzero(self.state) == self.state.size:
-            winner = 0  # Set the win state to a tie
+        if self.state.is_finished():
+            winner = self.state.get_winner()
         else:  # Recursive case
 
             # If there aren't any simulated moves beyond this one, generate them
-            if len(self.children) == 0:
-                self.expand()
+            self.expand()
 
             # Choose the node to explore
-            weights = Node.v_weight(
-                np.array(list(self.children.values())), self.total)
+            weights = Node.v_weight(self.children, self.total)
 
             # If there are any unsimulated branches, only choose among them
             if np.any(np.isnan(weights)):
@@ -204,12 +161,11 @@ class Node:
                 weights[np.isnan(weights)] = 1
 
             # Choose a branch to explore weighted by their priority
-            node = rng.choice(list(self.children.values()),
-                              p=weights/weights.sum())
+            node = rng.choice(self.children, p=weights/weights.sum())
 
             # explore node
             winner = node.explore()
 
         # Record result (for both the base case and the recursive case)
-        self.wins += int(winner == self.side or winner == 0)
+        self.wins += int(winner == self.side) + 0.5 * int(winner == game.TIE)
         return winner  # Return the winner so higher up nodes can record their win_rate
