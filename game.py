@@ -1,8 +1,13 @@
+# Allow recursive annotations. Sucks this isn't default until 3.10
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 import numpy
 
 from vectorize_objects import vectorize
+
+TIE = DRAW = 'DRAW'
 
 
 class GameState(ABC):
@@ -47,7 +52,7 @@ class GameState(ABC):
         pass
 
     @abstractmethod
-    def move(self, player, move):
+    def move(self, player, move) -> GameState:
         '''
         Advances the game state by making the given move by the given player
 
@@ -75,7 +80,7 @@ class GameState(ABC):
         pass
 
     @abstractmethod
-    def is_finished(self):
+    def is_finished(self) -> bool:
         '''
         Returns true if the game has ended in this current state, regardless of
         whether there is a winner.

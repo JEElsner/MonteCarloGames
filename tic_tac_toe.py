@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import numpy as np
 import os
 
+import game
 from game import GameState
+
 from vectorize_objects import vectorize
 
 import monte_carlo_ttt as mct
@@ -48,26 +52,26 @@ class TicTacToe(GameState):
         # Vectorize the TicTacToe class
         vectorize(TicTacToe)
 
-    def get_state(self):
+    def get_state(self) -> np.ndarray:
         '''
         Returns the state of the game board
         '''
         return self.board
 
-    def get_current_turn(self):
+    def get_current_turn(self) -> str:
         '''
         Returns the player whose turn it currently is. (Players are 'X' and 'O')
         '''
         return self.players[0]
 
-    def get_possible_moves(self, player):
+    def get_possible_moves(self, player) -> np.ndarray:
         '''
         Return the possible moves as a list of integers as the index of each
         square in the Tic-Tac-Toe grid.
         '''
         return np.arange(self.board.size)[np.char.isdigit(self.board.flat)]
 
-    def move(self, player, move):
+    def move(self, player, move) -> TicTacToe:
         '''
         Returns a new TicTacToe object representing the next state of the game
         after this move is made.
@@ -90,9 +94,9 @@ class TicTacToe(GameState):
         new_state.flat[move] = player
 
         # Create and return the next game state
-        return TicTacToe(board=new_state, turn=self.players[0])
+        return TicTacToe(board=new_state, turn=self.players[1])
 
-    def get_winner(self):
+    def get_winner(self) -> str:
         '''
         Return the player who has won in the current game state, or None if no
         player has won yet
@@ -118,12 +122,12 @@ class TicTacToe(GameState):
             return flipped_diagonal[0]
 
         if np.all(np.char.isalpha(self.get_state())):
-            return 'TIE'
+            return game.TIE
 
         # Return None since there is not yet a winner
         return None
 
-    def is_finished(self):
+    def is_finished(self) -> bool:
         return self.get_winner() is not None or \
             np.all(np.char.isalpha(self.get_state()))
 

@@ -51,6 +51,7 @@ class TTTTest(unittest.TestCase):
                          'Move copy board')
         self.assertFalse(np.all(state1.board == expected_state),
                          'Move immutability')
+        self.assertEqual(state2.get_current_turn(), 'O', 'Next Player\'s turn')
 
     def test_wrong_turn(self):
         game = ttt.TicTacToe()
@@ -91,7 +92,7 @@ class TTTTest(unittest.TestCase):
                                ['O', 'O', 'X'],
                                ['X', 'O', 'X']])
 
-        self.assertEqual(game.get_winner(), 'TIE', 'Game is a tie')
+        self.assertEqual(game.get_winner(), 'DRAW', 'Game is a tie')
 
     def test_game_end(self):
         game = ttt.TicTacToe()
