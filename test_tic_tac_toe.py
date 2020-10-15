@@ -101,6 +101,20 @@ class TTTTest(unittest.TestCase):
         game.board = np.full((3, 3), 'X')
         self.assertTrue(game.is_finished(), 'Full game is finished')
 
+    def test_to_string(self):
+        game = ttt.TicTacToe()
+
+        string = ' 0 | 1 | 2 \n' + \
+            '---+---+---\n' + \
+            ' 3 | 4 | 5 \n' + \
+            '---+---+---\n' + \
+            ' 6 | 7 | 8 \n'
+
+        if str(game) != string:
+            print('Expected\n', string, '\n', 'Actual\n', str(game))
+
+        self.assertEqual(str(game), string)
+
 
 if __name__ == '__main__':
     unittest.main()

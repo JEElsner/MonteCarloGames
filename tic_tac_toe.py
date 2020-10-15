@@ -11,17 +11,6 @@ from vectorize_objects import vectorize
 import monte_carlo_ttt as mct
 from monte_carlo_ttt import Node
 
-os.system('color')
-
-COLOR = {
-    'GREEN': '\033[92m',
-    'YELLOW': '\033[93m',
-    'ENDC': '\033[0m',
-}
-
-sides = {1: COLOR['YELLOW'] + 'X' + COLOR['ENDC'],
-         -1: COLOR['GREEN'] + 'O' + COLOR['ENDC']}
-
 
 class TicTacToe(GameState):
     def __init__(self, board=None, turn=None):
@@ -139,44 +128,15 @@ class TicTacToe(GameState):
         string = ''
 
         for v, row in enumerate(self.board):
-            string += ' ' + ' | '.join(row) + '\n'
+            string += ' ' + ' | '.join(row) + ' \n'
             if v != len(self.board)-1:
-                string += '+'.join([('-' * 3) for i in row])
+                string += '+'.join([('-' * 3) for i in row]) + '\n'
 
-
-def print_board(board):
-    txt = np.arange(board.size).reshape(board.shape).astype(dtype=str)
-
-    for i, c in sides.items():
-        txt[board == i] = c
-
-    for v, row in enumerate(txt):
-        print(' ' + ' | '.join(row))
-        if v != len(txt)-1:
-            print('+'.join([('-' * 3) for i in row]))
-
-
-def is_win_state(board):
-    for row in board:
-        if np.all(row == row[0]) and row[0] != 0:
-            return (True, row[0])
-
-    for col in board.T:
-        if np.all(col == col[0]) and col[0] != 0:
-            return (True, col[0])
-
-    if np.all(board.diagonal() == board.diagonal()[0]) and board.diagonal()[0] != 0:
-        return (True, board.diagonal()[0])
-
-    flipped_diagonal = np.fliplr(board).diagonal()
-    if np.all(flipped_diagonal == flipped_diagonal[0]) and flipped_diagonal[0] != 0:
-        return (True, flipped_diagonal[0])
-
-    return (False, None)
+        return string
 
 
 class Player:
-    def __init__(self, side, board):
+    def __init__(self, side, board: GameState):
         self.side = side
 
     def get_move(self):
@@ -188,19 +148,17 @@ class Player:
 
 class HumanPlayer(Player):
     def get_move(self):
-        return int(input('Place {0} where? '.format(sides[self.side])))
+        return int(input('Place {0} where? '.format(self.side)))
 
     def notify_move(self, move, side):
         pass
 
 
 class MonteCarloPlayer(Player):
-    def __init__(self, side, board):
+    def __init__(self, side, board: GameState):
         super().__init__(side, board)
 
-        mct.get_winner = lambda state: is_win_state(state)[1]
-
-        self.base_node = Node(side, board)
+        self.base_node = Node(board)
         self.curr_node = self.base_node
 
     def get_move(self):
@@ -216,31 +174,32 @@ class MonteCarloPlayer(Player):
 
 
 def main():
-    board = np.zeros((3, 3))
+    game_board = TicTacToe()
 
-    players = [HumanPlayer(1, board), MonteCarloPlayer(-1, board)][::-1]
+    players = {'X': MonteCarloPlayer('X', game_board),
+               'O': HumanPlayer('O', game_board)}
 
     end = False
     winner = None
     while not end:
-        for player in players:
-            print_board(board)
+        side = game_board.get_current_turn()
+        player = players[side]
 
-            location = player.get_move()
-            board.flat[location] = player.side
+        print(str(game_board))
 
-            for watcher in players:
-                watcher.notify_move(location, player.side)
+        location = player.get_move()
+        game_board = game_board.move(player.side, location)
 
-            end, winner = is_win_state(board)
-            end |= (np.count_nonzero(board) == 9)
-            if end:
-                break
+        for watcher in players.values():
+            watcher.notify_move(location, player.side)
 
-    print_board(board)
+        if game_board.is_finished():
+            break
 
-    if winner is not None:
-        print(sides[winner], 'wins!')
+    print(str(game_board))
+
+    if game_board.get_winner() is not game.DRAW:
+        print(game_board.get_winner(), 'wins!')
     else:
         print('The game is a draw!')
 
