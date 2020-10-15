@@ -27,7 +27,7 @@ class MonteCarloTest(unittest.TestCase):
         node = mct.Node(game)
 
         dt = mct.decision_time
-        mct.decision_time = timedelta(seconds=2)
+        mct.decision_time = timedelta(seconds=5)
 
         move = node.get_move()
 
