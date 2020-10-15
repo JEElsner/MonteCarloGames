@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 
 import numpy as np
 import numpy.random as rng
@@ -54,7 +55,7 @@ class Node:
 
         self.__previous_move = prev_move
 
-        self.children = []
+        self.children: List(Node) = []
 
         # Create v_funcs for all object methods
         vectorize(Node)
@@ -66,6 +67,28 @@ class Node:
         '''
 
         return np.divide(self.wins, self.total)
+
+    def next_state(self, move, side):
+        '''
+        Returns the next valid state node after the state represented by this node.
+        The new returned state is reached from the current game state when the
+        passed side makes the passed move
+
+        Arguments:
+
+            move        The move made to reach the new game state
+
+            side        The player that makes the move to get to the new game
+                        state
+        '''
+
+        # Expand the game-state tree if necessary
+        self.expand()
+
+        # Return the game state reached by move
+        for next_state in self.children:
+            if next_state.previous_move == move:
+                return next_state
 
     @property
     def previous_move(self):
