@@ -1,6 +1,6 @@
 import unittest
 
-import monte_carlo_ttt as mct
+import monte_carlo as mct
 import tic_tac_toe as ttt
 
 import numpy as np

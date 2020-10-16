@@ -8,8 +8,8 @@ from game import GameState
 
 from vectorize_objects import vectorize
 
-import monte_carlo_ttt as mct
-from monte_carlo_ttt import Node
+import monte_carlo as mct
+from monte_carlo import Node
 
 
 class TicTacToe(GameState):
