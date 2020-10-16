@@ -58,6 +58,9 @@ class TicTacToe(GameState):
         Return the possible moves as a list of integers as the index of each
         square in the Tic-Tac-Toe grid.
         '''
+        if player != self.get_current_turn():
+            return np.empty(0)
+
         return np.arange(self.board.size)[np.char.isdigit(self.board.flat)]
 
     def move(self, player, move) -> TicTacToe:
@@ -73,10 +76,14 @@ class TicTacToe(GameState):
                         place the player's piece
         '''
 
-        # Make sure the player can play
+        # Make sure it's the player's turn
         if player != self.get_current_turn():
             raise ValueError(
                 type(player), 'It is not {0}\'s turn'.format(player))
+
+        # Make sure the move is allowed
+        if move not in self.get_possible_moves(player):
+            raise ValueError(move, 'Invalid move')
 
         # Copy the state to create a new TicTacToe state
         new_state = np.copy(self.board)
@@ -139,7 +146,7 @@ class Player:
     def __init__(self, side, board: GameState):
         self.side = side
 
-    def get_move(self):
+    def get_move(self, possible_moves):
         pass
 
     def notify_move(self, move, side):
@@ -147,8 +154,14 @@ class Player:
 
 
 class HumanPlayer(Player):
-    def get_move(self):
-        return int(input('Place {0} where? '.format(self.side)))
+    def get_move(self, possible_moves):
+        move = int(input('Place {0} where? '.format(self.side)))
+
+        if move not in possible_moves:
+            print('Invalid move!')
+            return self.get_move(possible_moves)
+        else:
+            return move
 
     def notify_move(self, move, side):
         pass
@@ -161,7 +174,7 @@ class MonteCarloPlayer(Player):
         self.base_node = Node(board)
         self.curr_node = self.base_node
 
-    def get_move(self):
+    def get_move(self, possible_moves):
         print('Thinking...')
         # print(len(self.curr_node.children))
         try:
@@ -187,7 +200,7 @@ def main():
 
         print(str(game_board))
 
-        location = player.get_move()
+        location = player.get_move(game_board.get_possible_moves(side))
         game_board = game_board.move(player.side, location)
 
         for watcher in players.values():
