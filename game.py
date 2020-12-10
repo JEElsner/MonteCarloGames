@@ -10,6 +10,77 @@ from vectorize_objects import vectorize
 TIE = DRAW = 'DRAW'
 
 
+def main():
+    import questions
+
+    import tic_tac_toe
+    import othello
+
+    games = {'Tic Tac Toe': tic_tac_toe, 'Othello': othello}
+
+    choice = questions.option_question(
+        'Which game would you like to play?', games.keys(), list(games.values()))
+
+    game_types = ['All AI', 'Player vs AI', 'Player vs Player']
+    n_humans = questions.option_question('Who will be playing?', game_types)
+
+    players = []
+    for i in range(n_humans):
+        players.append(HumanPlayer())
+
+    while len(players) < 2:
+        players.append(MonteCarloPlayer())
+
+    for state in choice.create_game_and_get_game_loop(players):
+        pass
+
+
+class Player:
+    def __init__(self, side, board: GameState):
+        self.side = side
+
+    def get_move(self, possible_moves):
+        pass
+
+    def notify_move(self, move, side):
+        pass
+
+
+class HumanPlayer(Player):
+    def get_move(self, possible_moves):
+        move = int(input('Place {0} where? '.format(self.side)))
+
+        if move not in possible_moves:
+            print('Invalid move!')
+            return self.get_move(possible_moves)
+        else:
+            return move
+
+    def notify_move(self, move, side):
+        pass
+
+
+class MonteCarloPlayer(Player):
+    def __init__(self, side, board: GameState):
+        from monte_carlo import Node
+
+        super().__init__(side, board)
+
+        self.base_node = Node(board)
+        self.curr_node = self.base_node
+
+    def get_move(self, possible_moves):
+        print('Thinking...')
+        # print(len(self.curr_node.children))
+        try:
+            return self.curr_node.get_move()
+        except RuntimeWarning:
+            pass
+
+    def notify_move(self, move, side):
+        self.curr_node = self.curr_node.next_state(move, side)
+
+
 class GameState(ABC):
     '''
     A base class to store the generic state of any game at a single point in
@@ -112,3 +183,7 @@ class GameState(ABC):
     @abstractmethod
     def __str__(self):
         return super().__str__()
+
+
+if __name__ == '__main__':
+    main()
