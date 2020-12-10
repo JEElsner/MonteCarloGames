@@ -23,6 +23,40 @@ DIRECTIONS = [(-1,  1), (0,  1), (1,  1),
               (-1, -1), (0, -1), (1, -1)]
 
 
+def create_game_and_get_game_loop(players):
+    game_board = Othello()
+
+    players = {DARK: players[0], LIGHT: players[1]}
+
+    end = False
+    winner = None
+    while not end:
+        side = game_board.get_current_turn()
+        player = players[side]
+
+        print(str(game_board))
+
+        location = player.get_move(game_board.get_possible_moves(side))
+        game_board = game_board.move(player.side, location)
+
+        for watcher in players.values():
+            watcher.notify_move(location, player.side)
+
+        if game_board.is_finished():
+            break
+
+        yield game_board
+
+    print(str(game_board))
+
+    if game_board.get_winner() is not game.DRAW:
+        print(game_board.get_winner(), 'wins!')
+    else:
+        print('The game is a draw!')
+
+    raise StopIteration
+
+
 class Othello(game.GameState):
     def __init__(self, board=None, turn=None):
         shape = (8, 8)  # Create the shape of the board

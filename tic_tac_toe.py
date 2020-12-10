@@ -186,11 +186,10 @@ class MonteCarloPlayer(Player):
         self.curr_node = self.curr_node.next_state(move, side)
 
 
-def main():
+def create_game_and_get_game_loop(players):
     game_board = TicTacToe()
 
-    players = {'X': MonteCarloPlayer('X', game_board),
-               'O': HumanPlayer('O', game_board)}
+    players = {'X': players[0], 'O': players[1]}
 
     end = False
     winner = None
@@ -209,6 +208,8 @@ def main():
         if game_board.is_finished():
             break
 
+        yield game_board
+
     print(str(game_board))
 
     if game_board.get_winner() is not game.DRAW:
@@ -216,6 +217,9 @@ def main():
     else:
         print('The game is a draw!')
 
+    raise StopIteration
+
 
 if __name__ == '__main__':
-    main()
+    for state in create_game_and_get_game_loop(game.HumanPlayer(), game.MonteCarloPlayer()):
+        pass
