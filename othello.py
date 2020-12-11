@@ -87,6 +87,16 @@ class Othello(game.GameState):
         else:
             self.board = board
 
+        # If we have a custom starting player
+        if turn is not None:
+            # Make sure the current turn is valid
+            if turn in self.players:
+                # Loop until we get to the current player's turn
+                while self.players[0] != turn:
+                    self.players.append(self.players.pop(0))
+            else:
+                raise ValueError('Invalid initializing player')
+
     def __str__(self) -> str:
         '''
         Give a human-readable version of the othello board. One that visually
