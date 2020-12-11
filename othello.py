@@ -105,7 +105,7 @@ class Othello(game.GameState):
             self.board.shape[0] + corners['ur'] + '\n'
 
         # Draw the board
-        for y, row in enumerate(reversed(self.board.T)):
+        for y, row in enumerate(reversed(self.board)):
             string += str(self.board.shape[1] - y - DEBUG_INDEXES) + \
                 ' ' + side + ''.join(row) + side + '\n'
 
