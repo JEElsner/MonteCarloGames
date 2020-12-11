@@ -128,7 +128,7 @@ class Othello(game.GameState):
     def get_possible_moves(self, player: str) -> np.ndarray:
         # Make sure it's the player's turn
         if player != self.get_current_turn():
-            return np.empty()
+            return np.empty(0)
 
         # Boolean array to track where legal moves can be made
         move_possible = np.zeros(self.board.shape, dtype=bool, order='F')
@@ -214,14 +214,10 @@ class Othello(game.GameState):
             i = 1
             flip_good = False
 
-            while 0 < x+dx*i < self.board.shape[1] and \
-                    0 < y+dy*i < self.board.shape[0]:
+            while 0 < x+dx*i < new_state.shape[0] and \
+                    0 < y+dy*i < new_state.shape[1]:
 
-                if self.board[y+dy*i][x+dx*i] == player:
-                    # This direction is broken by one of the
-                    # player's pieces, so we can't flip here
-                    break
-                elif self.board[y+dy*i][x+dx*i] == EMPTY:
+                if new_state[x+dx*i][y+dy*i] == player:
                     # By the time we've gotten to this y+dy*i and
                     # x+dx*i, we know we've got an unbroken line of
                     # the enemy's pieces, and now one gap. So this
@@ -230,7 +226,10 @@ class Othello(game.GameState):
                     if i > 1:
                         flip_good = True
 
+                    break
+                elif new_state[x+dx*i][y+dy*i] == EMPTY:
                     # We're done searching in this direction
+                    # We've hit a gap
                     break
 
                 # If none of the above conditions were met, we
@@ -243,7 +242,7 @@ class Othello(game.GameState):
             # If the direction just checked can be flipped, flip it
             if flip_good:
                 for n in range(i-1, 0, -1):
-                    new_state[y+dy*n][x+dx*n] == player
+                    new_state[x+dx*n][y+dy*n] = player
 
         # Create and return the next game state
         return Othello(board=new_state, turn=self.players[1])
