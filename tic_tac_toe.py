@@ -162,10 +162,10 @@ def create_game_and_get_game_loop(players):
         for watcher in players.values():
             watcher.notify_move(location, player.side)
 
+        yield game_board
+
         if game_board.is_finished():
             break
-
-        yield game_board
 
     print(str(game_board))
 
