@@ -26,7 +26,8 @@ DIRECTIONS = [(-1,  1), (0,  1), (1,  1),
 def create_game_and_get_game_loop(players):
     game_board = Othello()
 
-    players = {DARK: players[0], LIGHT: players[1]}
+    players = {DARK: players[0](DARK, game_board),
+               LIGHT: players[1](LIGHT, game_board)}
 
     end = False
     winner = None
@@ -53,8 +54,6 @@ def create_game_and_get_game_loop(players):
         print(game_board.get_winner(), 'wins!')
     else:
         print('The game is a draw!')
-
-    raise StopIteration
 
 
 class Othello(game.GameState):

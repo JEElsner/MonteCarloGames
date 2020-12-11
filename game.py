@@ -26,10 +26,10 @@ def main():
 
     players = []
     for i in range(n_humans):
-        players.append(HumanPlayer())
+        players.append(HumanPlayer)
 
     while len(players) < 2:
-        players.append(MonteCarloPlayer())
+        players.append(MonteCarloPlayer)
 
     for state in choice.create_game_and_get_game_loop(players):
         pass

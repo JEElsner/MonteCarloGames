@@ -189,7 +189,8 @@ class MonteCarloPlayer(Player):
 def create_game_and_get_game_loop(players):
     game_board = TicTacToe()
 
-    players = {'X': players[0], 'O': players[1]}
+    players = {'X': players[0]('X', game_board),
+               'O': players[1]('O', game_board)}
 
     end = False
     winner = None
@@ -217,9 +218,7 @@ def create_game_and_get_game_loop(players):
     else:
         print('The game is a draw!')
 
-    raise StopIteration
-
 
 if __name__ == '__main__':
-    for state in create_game_and_get_game_loop(game.HumanPlayer(), game.MonteCarloPlayer()):
+    for state in create_game_and_get_game_loop(game.HumanPlayer, game.MonteCarloPlayer):
         pass
