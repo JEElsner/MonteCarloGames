@@ -69,20 +69,23 @@ class Othello(game.GameState):
 
         self.players = [DARK, LIGHT]  # Identify the players
 
-        # Create the board
-        self.board = np.full(shape, EMPTY, dtype=str, order='F')
+        if board is None:
+            # Create the board
+            self.board = np.full(shape, EMPTY, dtype=str, order='F')
 
-        # Place the starting pieces
-        self.board[3][3] = DARK
-        self.board[4][4] = DARK
+            # Place the starting pieces
+            self.board[3][3] = DARK
+            self.board[4][4] = DARK
 
-        self.board[3][4] = LIGHT
-        self.board[4][3] = LIGHT
+            self.board[3][4] = LIGHT
+            self.board[4][3] = LIGHT
 
-        # Orientation Debug
-        # self.board[0][0] = DARK
-        # self.board[7][7] = LIGHT
-        # self.board[5][3] = DARK # One possible starting move
+            # Orientation Debug
+            # self.board[0][0] = DARK
+            # self.board[7][7] = LIGHT
+            # self.board[5][3] = DARK # One possible starting move
+        else:
+            self.board = board
 
     def __str__(self) -> str:
         '''
@@ -172,7 +175,7 @@ class Othello(game.GameState):
         indices = np.arange(self.board.size)
         return indices[move_possible.flatten()]
 
-    def move(self, player: str, move: tuple) -> Othello:
+    def move(self, player: str, move) -> Othello:
         '''
         Returns a new Othello object representing the next state of the game
         after this move is made.
@@ -200,7 +203,7 @@ class Othello(game.GameState):
 
         # Get the x, y coordinate of the new piece
         xs, ys = np.meshgrid(
-            np.arange(self.board.shape[0]), np.arange(self.board.shape[1]))
+            np.arange(self.board.shape[0]), np.arange(self.board.shape[1]), indexing='ij')
 
         x, y = xs.flat[move], ys.flat[move]
 
