@@ -220,5 +220,5 @@ def create_game_and_get_game_loop(players):
 
 
 if __name__ == '__main__':
-    for state in create_game_and_get_game_loop(game.HumanPlayer, game.MonteCarloPlayer):
+    for state in create_game_and_get_game_loop([game.HumanPlayer, game.MonteCarloPlayer]):
         pass
