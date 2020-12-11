@@ -5,16 +5,15 @@ from abc import ABC, abstractmethod
 
 import numpy
 
+import questions
 from vectorize_objects import vectorize
 
 TIE = DRAW = 'DRAW'
 
 
 def main():
-    import questions
-
-    import tic_tac_toe
     import othello
+    import tic_tac_toe
 
     games = {'Tic Tac Toe': tic_tac_toe, 'Othello': othello}
 
@@ -36,8 +35,9 @@ def main():
 
 
 class Player:
-    def __init__(self, side, board: GameState):
+    def __init__(self, side, board: GameState, user_input_cast: function):
         self.side = side
+        self.user_input_cast = user_input_cast
 
     def get_move(self, possible_moves):
         pass
@@ -48,23 +48,20 @@ class Player:
 
 class HumanPlayer(Player):
     def get_move(self, possible_moves):
-        move = int(input('Place {0} where? '.format(self.side)))
-
-        if move not in possible_moves:
-            print('Invalid move!')
-            return self.get_move(possible_moves)
-        else:
-            return move
+        return questions.ask_question(prompt='It is {0}\'s turn. What is your move? '.format(self.side),
+                                      in_bounds=lambda move: move in possible_moves,
+                                      cast=self.user_input_cast,
+                                      error='Invalid move! Possible moves include {0}'.format(possible_moves[:5]))
 
     def notify_move(self, move, side):
         pass
 
 
 class MonteCarloPlayer(Player):
-    def __init__(self, side, board: GameState):
+    def __init__(self, side, board: GameState, user_input_cast: function = None):
         from monte_carlo import Node
 
-        super().__init__(side, board)
+        super().__init__(side, board, user_input_cast)
 
         self.base_node = Node(board)
         self.curr_node = self.base_node

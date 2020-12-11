@@ -23,11 +23,18 @@ DIRECTIONS = [(-1,  1), (0,  1), (1,  1),
               (-1, -1), (0, -1), (1, -1)]
 
 
+def parse_user_input(response: str):
+    try:
+        return (int(response[1]) - 1)*8 + (ord(response[0].upper()) - 65)
+    except:
+        return None
+
+
 def create_game_and_get_game_loop(players):
     game_board = Othello()
 
-    players = {DARK: players[0](DARK, game_board),
-               LIGHT: players[1](LIGHT, game_board)}
+    players = {DARK: players[0](DARK, game_board, parse_user_input),
+               LIGHT: players[1](LIGHT, game_board, parse_user_input)}
 
     end = False
     winner = None
@@ -74,6 +81,8 @@ class Othello(game.GameState):
 
         # Orientation Debug
         # self.board[0][0] = DARK
+        # self.board[7][7] = LIGHT
+        # self.board[5][3] = DARK # One possible starting move
 
     def __str__(self) -> str:
         '''
@@ -271,8 +280,10 @@ class Othello(game.GameState):
 
 
 def main():
+    print(Othello())
     print(Othello().get_possible_moves(DARK))
 
 
 if __name__ == '__main__':
-    main()
+    for state in create_game_and_get_game_loop([game.HumanPlayer, game.HumanPlayer]):
+        pass

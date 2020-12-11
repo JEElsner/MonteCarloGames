@@ -145,8 +145,8 @@ class TicTacToe(GameState):
 def create_game_and_get_game_loop(players):
     game_board = TicTacToe()
 
-    players = {'X': players[0]('X', game_board),
-               'O': players[1]('O', game_board)}
+    players = {'X': players[0]('X', game_board, int),
+               'O': players[1]('O', game_board, int)}
 
     end = False
     winner = None
