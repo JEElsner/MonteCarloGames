@@ -142,50 +142,6 @@ class TicTacToe(GameState):
         return string
 
 
-class Player:
-    def __init__(self, side, board: GameState):
-        self.side = side
-
-    def get_move(self, possible_moves):
-        pass
-
-    def notify_move(self, move, side):
-        pass
-
-
-class HumanPlayer(Player):
-    def get_move(self, possible_moves):
-        move = int(input('Place {0} where? '.format(self.side)))
-
-        if move not in possible_moves:
-            print('Invalid move!')
-            return self.get_move(possible_moves)
-        else:
-            return move
-
-    def notify_move(self, move, side):
-        pass
-
-
-class MonteCarloPlayer(Player):
-    def __init__(self, side, board: GameState):
-        super().__init__(side, board)
-
-        self.base_node = Node(board)
-        self.curr_node = self.base_node
-
-    def get_move(self, possible_moves):
-        print('Thinking...')
-        # print(len(self.curr_node.children))
-        try:
-            return self.curr_node.get_move()
-        except RuntimeWarning:
-            pass
-
-    def notify_move(self, move, side):
-        self.curr_node = self.curr_node.next_state(move, side)
-
-
 def create_game_and_get_game_loop(players):
     game_board = TicTacToe()
 
