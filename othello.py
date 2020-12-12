@@ -118,20 +118,20 @@ class Othello(game.GameState):
 
         # Draw the top edge of the board
         string = '  ' + corners['ul'] + top * \
-            rotated.shape[0] + corners['ur'] + '\n'
+            (rotated.shape[0] * 2 - 1) + corners['ur'] + '\n'
 
         # Draw the board
         for y, row in enumerate(rotated):
             string += str(rotated.shape[1] - y - DEBUG_INDEXES) + \
-                ' ' + side + ''.join(row) + side + '\n'
+                ' ' + side + ' '.join(row) + side + '\n'
 
         # Draw the bottom edge of the board
         string += '  ' + corners['bl'] + top * \
-            rotated.shape[0] + corners['br'] + '\n'
+            (rotated.shape[0] * 2 - 1) + corners['br'] + '\n'
 
         # Draw the indices of the board columns
-        string += '   ' + ''.join([chr(65 - (17 * DEBUG_INDEXES) + x)
-                                   for x in range(rotated.shape[0])]) + '\n'
+        string += '   ' + ' '.join([chr(65 - (17 * DEBUG_INDEXES) + x)
+                                    for x in range(rotated.shape[0])]) + '\n'
 
         return string
 
