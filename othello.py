@@ -25,7 +25,9 @@ DIRECTIONS = [(-1,  1), (0,  1), (1,  1),
 
 def parse_user_input(response: str):
     try:
-        return (int(response[1]) - 1)*8 + (ord(response[0].upper()) - 65)
+        coord = (ord(response[0].upper()) - 65, int(response[1]) - 1)
+        print(coord)
+        return coord
     except:
         return None
 
@@ -81,9 +83,10 @@ class Othello(game.GameState):
             self.board[4][3] = LIGHT
 
             # Orientation Debug
-            # self.board[0][0] = DARK
-            # self.board[7][7] = LIGHT
-            # self.board[5][3] = DARK # One possible starting move
+            # self.board[0][0] = DARK  # Bottom left
+            # self.board[7][7] = LIGHT  # Top Right
+            # self.board[7][0] = DARK  # Bottom Right
+            # self.board[5][3] = DARK  # One possible starting move
         else:
             self.board = board
 
@@ -104,6 +107,9 @@ class Othello(game.GameState):
         '''
         # Sadly, this function is not human-readable
 
+        # Rotate the board so that indexing board[x][y] displays correctly
+        rotated = np.rot90(self.board)
+
         # Declare the unicode values for box-drawing characters
         top = '\u2501'
         side = '\u2503'
@@ -112,20 +118,20 @@ class Othello(game.GameState):
 
         # Draw the top edge of the board
         string = '  ' + corners['ul'] + top * \
-            self.board.shape[0] + corners['ur'] + '\n'
+            rotated.shape[0] + corners['ur'] + '\n'
 
         # Draw the board
-        for y, row in enumerate(reversed(self.board)):
-            string += str(self.board.shape[1] - y - DEBUG_INDEXES) + \
+        for y, row in enumerate(rotated):
+            string += str(rotated.shape[1] - y - DEBUG_INDEXES) + \
                 ' ' + side + ''.join(row) + side + '\n'
 
         # Draw the bottom edge of the board
         string += '  ' + corners['bl'] + top * \
-            self.board.shape[0] + corners['br'] + '\n'
+            rotated.shape[0] + corners['br'] + '\n'
 
         # Draw the indices of the board columns
         string += '   ' + ''.join([chr(65 - (17 * DEBUG_INDEXES) + x)
-                                   for x in range(self.board.shape[0])]) + '\n'
+                                   for x in range(rotated.shape[0])]) + '\n'
 
         return string
 
@@ -141,13 +147,13 @@ class Othello(game.GameState):
             return np.empty(0)
 
         # Boolean array to track where legal moves can be made
-        move_possible = np.zeros(self.board.shape, dtype=bool, order='F')
+        possible_moves = []
 
         # Find moves by iterating through each square, determining if it contains
         # the player's piece, then checking each direction to see if a move can
         # be made flipping the opponent's pieces in that direction
-        for y, row in enumerate(self.board):
-            for x, square in enumerate(row):
+        for x, col in enumerate(self.board):
+            for y, square in enumerate(col):
 
                 # Check if player has a piece in that square
                 if square == player:
@@ -157,18 +163,18 @@ class Othello(game.GameState):
                         while 0 < x+dx*i < self.board.shape[1] and \
                                 0 < y+dy*i < self.board.shape[0]:
 
-                            if self.board[y+dy*i][x+dx*i] == player:
+                            if self.board[x+dx*i][y+dy*i] == player:
                                 # This direction is broken by one of the
                                 # player's pieces, so we can't play here
                                 break
-                            elif self.board[y+dy*i][x+dx*i] == EMPTY:
+                            elif self.board[x+dx*i][y+dy*i] == EMPTY:
                                 # By the time we've gotten to this y+dy*i and
                                 # x+dx*i, we know we've got an unbroken line of
                                 # the enemy's pieces, and now one gap. So this
                                 # is a possible move, provided there is at least
                                 # one enemy piece between the player's pieces
                                 if i > 1:
-                                    move_possible[y+dy*i][x+dx*i] = True
+                                    possible_moves.append((x+dx*i, y+dy*i))
 
                                 # We're done searching in this direction
                                 break
@@ -180,12 +186,9 @@ class Othello(game.GameState):
                             # Increment the counter to continue in the direction
                             i += 1
 
-        # Generate a list labeling each square with an integer, and return
-        # only the integers where a move is possible
-        indices = np.arange(self.board.size)
-        return indices[move_possible.flatten()]
+        return possible_moves
 
-    def move(self, player: str, move) -> Othello:
+    def move(self, player: str, move: tuple) -> Othello:
         '''
         Returns a new Othello object representing the next state of the game
         after this move is made.
@@ -209,13 +212,10 @@ class Othello(game.GameState):
 
         # Copy the state to create a new Othello state
         new_state = np.copy(self.board)
-        new_state.flat[move] = player
+        new_state[move] = player
 
         # Get the x, y coordinate of the new piece
-        xs, ys = np.meshgrid(
-            np.arange(self.board.shape[0]), np.arange(self.board.shape[1]), indexing='ij')
-
-        x, y = xs.flat[move], ys.flat[move]
+        x, y = move
 
         # Flip all the pieces for the move
         for dx, dy in DIRECTIONS:
