@@ -160,8 +160,8 @@ class Othello(game.GameState):
                     for dx, dy in DIRECTIONS:
                         # Expand in each direction until we reach an edge
                         i = 1
-                        while 0 < x+dx*i < self.board.shape[1] and \
-                                0 < y+dy*i < self.board.shape[0]:
+                        while 0 <= x+dx*i < self.board.shape[1] and \
+                                0 <= y+dy*i < self.board.shape[0]:
 
                             if self.board[x+dx*i][y+dy*i] == player:
                                 # This direction is broken by one of the
@@ -224,8 +224,8 @@ class Othello(game.GameState):
             i = 1
             flip_good = False
 
-            while 0 < x+dx*i < new_state.shape[0] and \
-                    0 < y+dy*i < new_state.shape[1]:
+            while 0 <= x+dx*i < new_state.shape[0] and \
+                    0 <= y+dy*i < new_state.shape[1]:
 
                 if new_state[x+dx*i][y+dy*i] == player:
                     # By the time we've gotten to this y+dy*i and
