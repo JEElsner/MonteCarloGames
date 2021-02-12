@@ -6,17 +6,6 @@ from typing import List
 import numpy as np
 import numpy.random as rng
 
-
-# NumPy universal functions are extremely handy to use, and I find it increases
-# legibility greatly to think of operations as vector operations over vectors.
-# Unfortunately, it is impossible to make object methods into vector functions.
-#
-# This convenience method creates a static v_func for each object method in a
-# class. These methods are named v_[method name](). You will see these methods
-# used frequently in this code. The method that creates these methods is called
-# vectorize(), and you will see it called in object constructors
-from vectorize_objects import vectorize
-
 import game
 from game import GameState
 
@@ -59,9 +48,6 @@ class Node:
 
         self.children: List(Node) = []
 
-        # Create v_funcs for all object methods
-        vectorize(Node)
-
     def win_rate(self):
         '''
         Returns the probability of winning for the player that made the move to
@@ -96,6 +82,7 @@ class Node:
     def previous_move(self):
         return self.__previous_move
 
+    @np.vectorize
     def weight(self, parent_node_explored, exploration_param=np.sqrt(2)):
         '''
         Returns the weight of the node for how likely it is to be chosen to be
@@ -178,7 +165,7 @@ class Node:
             self.expand()
 
             # Choose the node to explore
-            weights = Node.v_weight(self.children, self.total)
+            weights = Node.weight(self.children, self.total)
 
             # If there are any unsimulated branches, only choose among them
             if np.any(np.isnan(weights)):

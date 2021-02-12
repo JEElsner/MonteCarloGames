@@ -19,7 +19,7 @@ class MonteCarloTest(unittest.TestCase):
     def test_multi_node_weight(self):
         nodes = np.array([mct.Node(ttt.TicTacToe())] * 5)
 
-        weights = mct.Node.v_weight(nodes, 1)
+        weights = mct.Node.weight(nodes, 1)
         self.assertTrue(np.all(np.isnan(weights)), msg=weights)
 
     def test_correct_tic_tac_toe_opening(self):

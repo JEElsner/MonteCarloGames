@@ -6,8 +6,6 @@ import os
 import game
 from game import GameState
 
-from vectorize_objects import vectorize
-
 import monte_carlo as mct
 from monte_carlo import Node
 
@@ -37,9 +35,6 @@ class TicTacToe(GameState):
                     self.players.append(self.players.pop(0))
             else:
                 raise ValueError('Invalid initializing player')
-
-        # Vectorize the TicTacToe class
-        vectorize(TicTacToe)
 
     def get_state(self) -> np.ndarray:
         '''

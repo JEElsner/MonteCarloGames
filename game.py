@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 import numpy
 
 import questions
-from vectorize_objects import vectorize
 
 TIE = DRAW = 'DRAW'
 
@@ -86,9 +85,6 @@ class GameState(ABC):
 
     def __init__(self):
         self.players = []
-
-        # Create v_funcs for this object
-        vectorize(GameState)
 
     @abstractmethod
     def get_state(self):
