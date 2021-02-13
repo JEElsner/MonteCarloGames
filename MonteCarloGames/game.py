@@ -11,8 +11,8 @@ TIE = DRAW = 'DRAW'
 
 
 def main():
-    import othello
-    import tic_tac_toe
+    from . import othello
+    from . import tic_tac_toe
 
     games = {'Tic Tac Toe': tic_tac_toe, 'Othello': othello}
 
@@ -58,7 +58,7 @@ class HumanPlayer(Player):
 
 class MonteCarloPlayer(Player):
     def __init__(self, side, board: GameState, user_input_cast: function = None):
-        from monte_carlo import Node
+        from .monte_carlo import Node
 
         super().__init__(side, board, user_input_cast)
 

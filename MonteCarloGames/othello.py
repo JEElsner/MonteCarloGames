@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 
-import game
+from . import game
 
-import monte_carlo
+from . import monte_carlo
 
 LIGHT = '\u25CF'  # '\u26AA'
 DARK = '\u25CB'  # '\u26AB'

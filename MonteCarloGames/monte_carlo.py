@@ -6,8 +6,8 @@ from typing import List
 import numpy as np
 import numpy.random as rng
 
-import game
-from game import GameState
+from . import game
+from .game import GameState
 
 # Ignore NumPy warnings: namely divide by zero warnings
 np.warnings.filterwarnings('ignore')

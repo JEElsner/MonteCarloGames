@@ -3,11 +3,11 @@ from __future__ import annotations
 import numpy as np
 import os
 
-import game
-from game import GameState
+from . import game
+from .game import GameState
 
-import monte_carlo as mct
-from monte_carlo import Node
+from . import monte_carlo as mct
+from .monte_carlo import Node
 
 
 class TicTacToe(GameState):
