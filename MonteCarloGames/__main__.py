@@ -21,6 +21,7 @@ def main():
 
     played_game = MonteCarloTree(choice, players)
 
+    print(played_game.current_state)
     for state in played_game.play_rounds():
         print(state)
 

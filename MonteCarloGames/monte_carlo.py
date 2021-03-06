@@ -42,7 +42,7 @@ class MonteCarloTree:
             player = self.players[side]
 
             # print(str(self.current_state))
-            yield self.current_state
+            # yield self.current_state
 
             move = player.get_move(self.current_state.get_possible_moves(side))
             self.current_node = self.current_node.next_state(move, side)
