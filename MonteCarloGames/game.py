@@ -13,8 +13,9 @@ TIE = DRAW = 'DRAW'
 def main():
     from . import othello
     from . import tic_tac_toe
+    from MonteCarloGames.tic_tac_toe import TTTTree
 
-    games = {'Tic Tac Toe': tic_tac_toe, 'Othello': othello}
+    games = {'Tic Tac Toe': TTTTree, 'Othello': othello}
 
     choice = questions.option_question(
         'Which game would you like to play?', games.keys(), list(games.values()))
@@ -29,8 +30,16 @@ def main():
     while len(players) < 2:
         players.append(MonteCarloPlayer)
 
-    for state in choice.create_game_and_get_game_loop(players):
-        pass
+    game = choice(players)
+
+    for state in game.play_rounds():
+        print(state)
+
+        if state.is_finished():
+            if state.get_winner() is not DRAW:
+                print(state.get_winner(), 'wins!')
+            else:
+                print('The game is a draw!')
 
 
 class Player:
@@ -57,24 +66,20 @@ class HumanPlayer(Player):
 
 
 class MonteCarloPlayer(Player):
-    def __init__(self, side, board: GameState, user_input_cast: function = None):
-        from .monte_carlo import Node
-
-        super().__init__(side, board, user_input_cast)
-
-        self.base_node = Node(board)
-        self.curr_node = self.base_node
+    def __init__(self, side, game_tree, user_input_cast: function = None):
+        self.game_tree = game_tree
 
     def get_move(self, possible_moves):
         print('Thinking...')
         # print(len(self.curr_node.children))
         try:
-            return self.curr_node.get_move()
+            return self.game_tree.current_node.get_move()
         except RuntimeWarning:
             pass
 
     def notify_move(self, move, side):
-        self.curr_node = self.curr_node.next_state(move, side)
+        pass
+        # self.curr_node = self.curr_node.next_state(move, side)
 
 
 class GameState(ABC):
