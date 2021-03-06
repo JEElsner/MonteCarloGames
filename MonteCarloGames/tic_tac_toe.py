@@ -10,36 +10,9 @@ from . import monte_carlo as mct
 from .monte_carlo import Node
 
 
-class TTTTree:
-    def __init__(self, players):
-        self.root_node = Node(TicTacToe())
-        self.current_node = self.root_node
-
-        self.players = {'X': players[0]('X', self, int),
-                        'O': players[1]('O', self, int)}
-
-    @property
-    def current_state(self):
-        return self.current_node.state
-
-    def play_rounds(self):
-        while not self.current_state.is_finished():
-            side = self.current_state.get_current_turn()
-            player = self.players[side]
-
-            # print(str(self.current_state))
-            yield self.current_state
-
-            move = player.get_move(self.current_state.get_possible_moves(side))
-            self.current_node = self.current_node.next_state(move, side)
-
-            for watcher in self.players.values():
-                watcher.notify_move(move, side)
-
-            yield self.current_state
-
-
 class TicTacToe(GameState):
+    parse_user_input = int
+
     def __init__(self, board=None, turn=None):
         self.players = ['X', 'O']
 

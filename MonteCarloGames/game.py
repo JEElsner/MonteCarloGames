@@ -1,7 +1,7 @@
 # Allow recursive annotations. Sucks this isn't default until 3.10
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractstaticmethod
 
 import numpy
 
@@ -11,11 +11,11 @@ TIE = DRAW = 'DRAW'
 
 
 def main():
-    from . import othello
-    from . import tic_tac_toe
-    from MonteCarloGames.tic_tac_toe import TTTTree
+    from MonteCarloGames.monte_carlo import MonteCarloTree
+    from MonteCarloGames.tic_tac_toe import TicTacToe
+    from MonteCarloGames.othello import Othello
 
-    games = {'Tic Tac Toe': TTTTree, 'Othello': othello}
+    games = {'Tic Tac Toe': TicTacToe, 'Othello': Othello}
 
     choice = questions.option_question(
         'Which game would you like to play?', games.keys(), list(games.values()))
@@ -30,7 +30,7 @@ def main():
     while len(players) < 2:
         players.append(MonteCarloPlayer)
 
-    game = choice(players)
+    game = MonteCarloTree(choice, players)
 
     for state in game.play_rounds():
         print(state)
@@ -87,6 +87,10 @@ class GameState(ABC):
     A base class to store the generic state of any game at a single point in
     time
     '''
+
+    @abstractstaticmethod
+    def parse_user_input():
+        pass
 
     def __init__(self):
         self.players = []

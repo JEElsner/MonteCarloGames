@@ -23,15 +23,6 @@ DIRECTIONS = [(-1,  1), (0,  1), (1,  1),
               (-1, -1), (0, -1), (1, -1)]
 
 
-def parse_user_input(response: str):
-    try:
-        coord = (ord(response[0].upper()) - 65, int(response[1]) - 1)
-        print(coord)
-        return coord
-    except:
-        return None
-
-
 def create_game_and_get_game_loop(players):
     game_board = Othello()
 
@@ -66,6 +57,15 @@ def create_game_and_get_game_loop(players):
 
 
 class Othello(game.GameState):
+    @staticmethod
+    def parse_user_input(response: str):
+        try:
+            coord = (ord(response[0].upper()) - 65, int(response[1]) - 1)
+            print(coord)
+            return coord
+        except:
+            return None
+
     def __init__(self, board=None, turn=None):
         shape = (8, 8)  # Create the shape of the board
 

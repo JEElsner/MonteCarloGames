@@ -20,6 +20,38 @@ decision_time = datetime.timedelta(seconds=2)
 get_winner = None
 
 
+class MonteCarloTree:
+    def __init__(self, game: game.GameState, players):
+        self.root_node = Node(game())
+        self.current_node = self.root_node
+
+        self.players = {}
+
+        for side in self.current_state.players:
+            self.players.update(
+                {side: players[0](side, self, game.parse_user_input)})
+
+    @ property
+    def current_state(self):
+        return self.current_node.state
+
+    def play_rounds(self):
+        while not self.current_state.is_finished():
+            side = self.current_state.get_current_turn()
+            player = self.players[side]
+
+            # print(str(self.current_state))
+            yield self.current_state
+
+            move = player.get_move(self.current_state.get_possible_moves(side))
+            self.current_node = self.current_node.next_state(move, side)
+
+            for watcher in self.players.values():
+                watcher.notify_move(move, side)
+
+            yield self.current_state
+
+
 class Node:
     '''
     One node in a Monte Carlo Tree. Stores a single game state.
@@ -78,11 +110,11 @@ class Node:
             if next_state.previous_move == move:
                 return next_state
 
-    @property
+    @ property
     def previous_move(self):
         return self.__previous_move
 
-    @np.vectorize
+    @ np.vectorize
     def weight(self, parent_node_explored, exploration_param=np.sqrt(2)):
         '''
         Returns the weight of the node for how likely it is to be chosen to be
