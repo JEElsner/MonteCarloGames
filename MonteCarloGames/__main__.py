@@ -51,6 +51,9 @@ def main():
             pickle.dump(rounds, file)
             print('Game saved as', filename)
 
+    if questions.yes_no_question('Play another game? '):
+        main()
+
 
 if __name__ == '__main__':
     main()
