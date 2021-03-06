@@ -28,15 +28,18 @@ def main():
     rounds = [(0, played_game.current_state)]
     print(played_game.current_state)
 
-    for move, state in played_game.play_rounds():
-        rounds.append((move, state))
-        print(state)
+    try:
+        for move, state in played_game.play_rounds():
+            rounds.append((move, state))
+            print(state)
 
-        if state.is_finished():
-            if state.get_winner() is not game.DRAW:
-                print(state.get_winner(), 'wins!')
-            else:
-                print('The game is a draw!')
+            if state.is_finished():
+                if state.get_winner() is not game.DRAW:
+                    print(state.get_winner(), 'wins!')
+                else:
+                    print('The game is a draw!')
+    except KeyboardInterrupt:
+        print('Game quit')
 
     if questions.yes_no_question('Save this game? '):
         name = questions.ask_question('Game name: ')
