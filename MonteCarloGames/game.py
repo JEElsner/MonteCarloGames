@@ -136,7 +136,3 @@ class GameState(ABC):
     @abstractmethod
     def __str__(self):
         return super().__str__()
-
-
-if __name__ == '__main__':
-    main()
