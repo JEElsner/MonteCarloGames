@@ -15,6 +15,8 @@ def main():
     from MonteCarloGames.tic_tac_toe import TicTacToe
     from MonteCarloGames.othello import Othello
 
+    from .monte_carlo import MonteCarloPlayer
+
     games = {'Tic Tac Toe': TicTacToe, 'Othello': Othello}
 
     choice = questions.option_question(
@@ -63,23 +65,6 @@ class HumanPlayer(Player):
 
     def notify_move(self, move, side):
         pass
-
-
-class MonteCarloPlayer(Player):
-    def __init__(self, side, game_tree, user_input_cast: function = None):
-        self.game_tree = game_tree
-
-    def get_move(self, possible_moves):
-        print('Thinking...')
-        # print(len(self.curr_node.children))
-        try:
-            return self.game_tree.current_node.get_move()
-        except RuntimeWarning:
-            pass
-
-    def notify_move(self, move, side):
-        pass
-        # self.curr_node = self.curr_node.next_state(move, side)
 
 
 class GameState(ABC):
