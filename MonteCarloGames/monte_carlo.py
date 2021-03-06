@@ -47,10 +47,7 @@ class MonteCarloTree:
             move = player.get_move(self.current_state.get_possible_moves(side))
             self.current_node = self.current_node.next_state(move, side)
 
-            for watcher in self.players.values():
-                watcher.notify_move(move, side)
-
-            yield self.current_state
+            yield move, self.current_state
 
 
 class MonteCarloPlayer(Player):
@@ -64,10 +61,6 @@ class MonteCarloPlayer(Player):
             return self.game_tree.current_node.get_move()
         except RuntimeWarning:
             pass
-
-    def notify_move(self, move, side):
-        pass
-        # self.curr_node = self.curr_node.next_state(move, side)
 
 
 class Node:

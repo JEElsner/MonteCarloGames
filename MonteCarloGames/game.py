@@ -18,9 +18,6 @@ class Player:
     def get_move(self, possible_moves):
         pass
 
-    def notify_move(self, move, side):
-        pass
-
 
 class HumanPlayer(Player):
     def get_move(self, possible_moves):
@@ -28,9 +25,6 @@ class HumanPlayer(Player):
                                       in_bounds=lambda move: move in possible_moves,
                                       cast=self.user_input_cast,
                                       error='Invalid move! Possible moves include {0}'.format(possible_moves[:5]))
-
-    def notify_move(self, move, side):
-        pass
 
 
 class GameState(ABC):
