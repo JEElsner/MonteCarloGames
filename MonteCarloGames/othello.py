@@ -23,39 +23,6 @@ DIRECTIONS = [(-1,  1), (0,  1), (1,  1),
               (-1, -1), (0, -1), (1, -1)]
 
 
-def create_game_and_get_game_loop(players):
-    game_board = Othello()
-
-    players = {DARK: players[0](DARK, game_board, parse_user_input),
-               LIGHT: players[1](LIGHT, game_board, parse_user_input)}
-
-    end = False
-    winner = None
-    while not end:
-        side = game_board.get_current_turn()
-        player = players[side]
-
-        print(str(game_board))
-
-        location = player.get_move(game_board.get_possible_moves(side))
-        game_board = game_board.move(player.side, location)
-
-        for watcher in players.values():
-            watcher.notify_move(location, player.side)
-
-        yield game_board
-
-        if game_board.is_finished():
-            break
-
-    print(str(game_board))
-
-    if game_board.get_winner() is not game.DRAW:
-        print(game_board.get_winner(), 'wins!')
-    else:
-        print('The game is a draw!')
-
-
 class Othello(game.GameState):
     @staticmethod
     def parse_user_input(response: str):
@@ -297,5 +264,4 @@ def main():
 
 
 if __name__ == '__main__':
-    for state in create_game_and_get_game_loop([game.HumanPlayer, game.HumanPlayer]):
-        pass
+    pass
