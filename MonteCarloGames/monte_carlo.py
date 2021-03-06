@@ -28,9 +28,9 @@ class MonteCarloTree:
 
         self.players = {}
 
-        for side in self.current_state.players:
+        for i, side in enumerate(self.current_state.players):
             self.players.update(
-                {side: players[0](side, self, game.parse_user_input)})
+                {side: players[i](side, self, game.parse_user_input)})
 
     @ property
     def current_state(self):

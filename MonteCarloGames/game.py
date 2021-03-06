@@ -10,40 +10,6 @@ import ConsoleQuestionPrompts as questions
 TIE = DRAW = 'DRAW'
 
 
-def main():
-    from MonteCarloGames.monte_carlo import MonteCarloTree
-    from MonteCarloGames.tic_tac_toe import TicTacToe
-    from MonteCarloGames.othello import Othello
-
-    from .monte_carlo import MonteCarloPlayer
-
-    games = {'Tic Tac Toe': TicTacToe, 'Othello': Othello}
-
-    choice = questions.option_question(
-        'Which game would you like to play?', games.keys(), list(games.values()))
-
-    game_types = ['All AI', 'Player vs AI', 'Player vs Player']
-    n_humans = questions.option_question('Who will be playing?', game_types)
-
-    players = []
-    for i in range(n_humans):
-        players.append(HumanPlayer)
-
-    while len(players) < 2:
-        players.append(MonteCarloPlayer)
-
-    game = MonteCarloTree(choice, players)
-
-    for state in game.play_rounds():
-        print(state)
-
-        if state.is_finished():
-            if state.get_winner() is not DRAW:
-                print(state.get_winner(), 'wins!')
-            else:
-                print('The game is a draw!')
-
-
 class Player:
     def __init__(self, side, board: GameState, user_input_cast: function):
         self.side = side
