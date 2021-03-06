@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 import numpy
 
-import questions
+import ConsoleQuestionPrompts as questions
 
 TIE = DRAW = 'DRAW'
 
