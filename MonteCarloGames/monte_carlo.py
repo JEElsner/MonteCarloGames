@@ -64,22 +64,24 @@ class MonteCarloPlayer(Player):
 
 
 class Node:
-    '''
+    """
     One node in a Monte Carlo Tree. Stores a single game state.
     Information is stored about the probability of winning with the move
     played to reach this game state.
-    '''
+    """
 
     def __init__(self, state: GameState, side=None, prev_move=None):
-        '''
+        """
         Creates the Monte Carlo Node.
 
         Arguments:
 
             side        The player that just made a move to reach this game state
 
-            board       The current state of the game represented by this node
-        '''
+            state       The current state of the game represented by this node
+
+            prev_move   The action or 'move' taken to get to this state.
+        """
 
         self.state = state
         self.side = side
